@@ -6,6 +6,35 @@ import javax.swing.*;
 import java.util.Random;
 
 public class CampoMinado {
+	
+	public class InvalidAttributeValueException extends Exception {
+	    public InvalidAttributeValueException(String message) {
+	        super(message);
+	    }
+	}
+	
+	public void setNumeroDeLinhasTotal(int numeroDeLinhasTotal) throws InvalidAttributeValueException {
+        if (numeroDeLinhasTotal <= 0) {
+            throw new InvalidAttributeValueException("Número de linhas deve ser maior que zero.");
+        }
+        this.NumeroDeLinhasTotal = numeroDeLinhasTotal;
+    }
+
+    public void setNumeroDeColunasTotal(int numeroDeColunasTotal) throws InvalidAttributeValueException {
+        if (numeroDeColunasTotal <= 0) {
+            throw new InvalidAttributeValueException("Número de colunas deve ser maior que zero.");
+        }
+        this.NumeroDeColunasTotal = numeroDeColunasTotal;
+    }
+
+    public void setQuantidadeDeBombasNaPartida(int quantidadeDeBombasNaPartida) throws InvalidAttributeValueException {
+        if (quantidadeDeBombasNaPartida <= 0 || quantidadeDeBombasNaPartida > NumeroDeLinhasTotal * NumeroDeColunasTotal) {
+            throw new InvalidAttributeValueException("Quantidade de bombas inválida.");
+        }
+        this.QuantidadeDeBombasNaPartida = quantidadeDeBombasNaPartida;
+    }
+	
+	
     public abstract class Celula extends JButton {
         public int linha;
         public int coluna;
@@ -92,6 +121,16 @@ public class CampoMinado {
     private boolean FimDeJogo = false;
 
     public CampoMinado() {
+    	
+    	try {
+            setNumeroDeLinhasTotal(32); // exemplo com 32, ajuste conforme necessário
+            setNumeroDeColunasTotal(32); // exemplo com 32, ajuste conforme necessário
+            setQuantidadeDeBombasNaPartida(100); // exemplo com 100, ajuste conforme necessário
+        } catch (InvalidAttributeValueException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Erro de Validação", JOptionPane.ERROR_MESSAGE);
+            return; // Interrompe a execução do construtor
+        }
+    	
         JanelaInicial.setSize(LarguraTabuleiro, AlturaTabuleiro);
         JanelaInicial.setLocationRelativeTo(null);
         JanelaInicial.setResizable(false);
