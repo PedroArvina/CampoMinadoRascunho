@@ -2,44 +2,96 @@ package campominado12;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.Random;
 import javax.swing.*;
+import java.util.Random;
 
-public class Minesweeper {
-    private class criadordeQuadrado extends JButton {
-        int Linha;
-        int Coluna;
-        boolean CTemMina;
-        boolean CAberta;
+public class CampoMinado {
+    public abstract class Celula extends JButton {
+        public int linha;
+        public int coluna;
+        public boolean aberta;
+        public boolean temMina;
 
-        public criadordeQuadrado(int Linha, int Coluna) {
-            this.Linha = Linha;
-            this.Coluna = Coluna;
-            this.CTemMina = false;
-            this.CAberta = false;
+        public Celula(int linha, int coluna) {
+            this.linha = linha;
+            this.coluna = coluna;
+            this.aberta = false;
+            this.temMina = false;
+        }
+
+        public abstract void revelar();
+    }
+
+    public class CelulaVazia extends Celula {
+        public CelulaVazia(int linha, int coluna) {
+            super(linha, coluna);
+        }
+
+        @Override
+        public void revelar() {
+            if (!this.aberta) {
+                abrirCelula(this);
+                trocarJogador();
+            }
         }
     }
 
-    int TamanhoDosQuadradinhos = 40;
-    int NumeroDeLinhasTotal = 32;
-    int NumeroDeColunasTotal = NumeroDeLinhasTotal;
-    int LarguraTabuleiro = NumeroDeColunasTotal * TamanhoDosQuadradinhos;
-    int AlturaTabuleiro = NumeroDeLinhasTotal * TamanhoDosQuadradinhos;
+    public class CelulaBomba extends Celula {
+        public CelulaBomba(int linha, int coluna) {
+            super(linha, coluna);
+            this.temMina = true;
 
-    JFrame JanelaInicial = new JFrame("Campo Minado");
-    JLabel TextoDeTopo = new JLabel();
-    JPanel PainelDoTexto = new JPanel();
-    JPanel PainelDosQuadradinhos = new JPanel();
+            this.setFocusable(false);
+            this.setMargin(new Insets(0, 0, 0, 0));
+            this.setFont(new Font("Arial", Font.PLAIN, 25));
+            this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+            this.setBackground(Color.LIGHT_GRAY);
 
-    int QuantidadeDeBombasNaPartida = 100;
-    criadordeQuadrado[][] MatrizDoTabuleiro = new criadordeQuadrado[NumeroDeLinhasTotal][NumeroDeColunasTotal];
-    Random random = new Random();
+            this.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    if (FimDeJogo || aberta) {
+                        return;
+                    }
+                    if (e.getButton() == MouseEvent.BUTTON1) {
+                        revelar();
+                        trocarJogador();
+                    } else if (e.getButton() == MouseEvent.BUTTON3) {
+                        marcarBandeira(CelulaBomba.this);
+                    }
+                }
+            });
+        }
 
-    int NumeroDeQuadradosClicados = 0;
-    boolean FimDeJogo = false;
+        @Override
+        public void revelar() {
+            mostrarBombas();
+        }
+    }
 
-    Minesweeper() {
+    // Variáveis para controlar os jogadores
+    private int jogadorAtual = 1;
+    private int totalJogadores = 2;
+
+    private int TamanhoDosQuadradinhos = 40;
+    private int NumeroDeLinhasTotal = 32;
+    private int NumeroDeColunasTotal = NumeroDeLinhasTotal;
+    private int LarguraTabuleiro = NumeroDeColunasTotal * TamanhoDosQuadradinhos;
+    private int AlturaTabuleiro = NumeroDeLinhasTotal * TamanhoDosQuadradinhos;
+
+    private JFrame JanelaInicial = new JFrame("Campo Minado");
+    private JLabel TextoDeTopo = new JLabel();
+    private JPanel PainelDoTexto = new JPanel();
+    private JPanel PainelDosQuadradinhos = new JPanel();
+
+    private int QuantidadeDeBombasNaPartida = 100;
+    private Celula[][] MatrizDoTabuleiro = new Celula[NumeroDeLinhasTotal][NumeroDeColunasTotal];
+    private Random random = new Random();
+
+    private int NumeroDeQuadradosClicados = 0;
+    private boolean FimDeJogo = false;
+
+    public CampoMinado() {
         JanelaInicial.setSize(LarguraTabuleiro, AlturaTabuleiro);
         JanelaInicial.setLocationRelativeTo(null);
         JanelaInicial.setResizable(false);
@@ -48,7 +100,7 @@ public class Minesweeper {
 
         TextoDeTopo.setFont(new Font("Arial", Font.BOLD, 25));
         TextoDeTopo.setHorizontalAlignment(JLabel.CENTER);
-        TextoDeTopo.setText("Campo Minado: " + Integer.toString(QuantidadeDeBombasNaPartida));
+        TextoDeTopo.setText("Campo Minado: Jogador " + jogadorAtual);
         TextoDeTopo.setOpaque(true);
 
         PainelDoTexto.setLayout(new BorderLayout());
@@ -60,36 +112,30 @@ public class Minesweeper {
 
         for (int Linha = 0; Linha < NumeroDeLinhasTotal; Linha++) {
             for (int Coluna = 0; Coluna < NumeroDeColunasTotal; Coluna++) {
-                criadordeQuadrado Quadrado = new criadordeQuadrado(Linha, Coluna);
-                MatrizDoTabuleiro[Linha][Coluna] = Quadrado;
+                Celula celula = new CelulaVazia(Linha, Coluna);
+                MatrizDoTabuleiro[Linha][Coluna] = celula;
 
-                Quadrado.setFocusable(false);
-                Quadrado.setMargin(new Insets(0, 0, 0, 0));
-                Quadrado.setFont(new Font("Minecraft Evenings", Font.PLAIN, 25));
-                Quadrado.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-                Quadrado.setBackground(Color.LIGHT_GRAY); 
+                celula.setFocusable(false);
+                celula.setMargin(new Insets(0, 0, 0, 0));
+                celula.setFont(new Font("Arial", Font.PLAIN, 25));
+                celula.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                celula.setBackground(Color.LIGHT_GRAY);
 
-                Quadrado.addMouseListener(new MouseAdapter() {
+                celula.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mousePressed(MouseEvent e) {
-                        if (FimDeJogo || Quadrado.CAberta) {
+                        if (FimDeJogo || celula.aberta) {
                             return;
                         }
                         if (e.getButton() == MouseEvent.BUTTON1) {
-                            if (Quadrado.CTemMina) {
-                                mostrarBombas();
-                            } else {
-                                abrirQuadrado(Quadrado);
-                            }
+                            celula.revelar();
                         } else if (e.getButton() == MouseEvent.BUTTON3) {
-                            if (!Quadrado.CAberta) {
-                                enfiaBandeira(Quadrado);
-                            }
+                            marcarBandeira(celula);
                         }
                     }
                 });
 
-                PainelDosQuadradinhos.add(Quadrado);
+                PainelDosQuadradinhos.add(celula);
             }
         }
 
@@ -98,46 +144,57 @@ public class Minesweeper {
     }
 
     void distribuidorDeBombas() {
-        int mineLeft = QuantidadeDeBombasNaPartida;
-        while (mineLeft > 0) {
-            int Linha = random.nextInt(NumeroDeLinhasTotal);
-            int Coluna = random.nextInt(NumeroDeColunasTotal);
+        int bombasRestantes = QuantidadeDeBombasNaPartida;
+        while (bombasRestantes > 0) {
+            int linha = random.nextInt(NumeroDeLinhasTotal);
+            int coluna = random.nextInt(NumeroDeColunasTotal);
 
-            if (!MatrizDoTabuleiro[Linha][Coluna].CTemMina) {
-                MatrizDoTabuleiro[Linha][Coluna].CTemMina = true;
-                mineLeft -= 1;
+            Celula celula = MatrizDoTabuleiro[linha][coluna];
+            if (!(celula instanceof CelulaBomba)) {
+                PainelDosQuadradinhos.remove(celula);
+                Celula novaCelula = new CelulaBomba(linha, coluna);
+                MatrizDoTabuleiro[linha][coluna] = novaCelula;
+                PainelDosQuadradinhos.add(novaCelula, linha * NumeroDeColunasTotal + coluna);
+                bombasRestantes--;
             }
         }
+        PainelDosQuadradinhos.revalidate();
+        PainelDosQuadradinhos.repaint();
     }
 
     void mostrarBombas() {
-        for (int Linha = 0; Linha < NumeroDeLinhasTotal; Linha++) {
-            for (int Coluna = 0; Coluna < NumeroDeColunasTotal; Coluna++) {
-                criadordeQuadrado Quadrado = MatrizDoTabuleiro[Linha][Coluna];
-                if (Quadrado.CTemMina) {
-                    Quadrado.setText("O");
+        for (int linha = 0; linha < NumeroDeLinhasTotal; linha++) {
+            for (int coluna = 0; coluna < NumeroDeColunasTotal; coluna++) {
+                Celula celula = MatrizDoTabuleiro[linha][coluna];
+                if (celula instanceof CelulaBomba) {
+                    celula.setText("O");
                 }
             }
         }
 
         FimDeJogo = true;
-        TextoDeTopo.setText("Perdeu");
+        TextoDeTopo.setText("Game Over!");
     }
 
-    void abrirQuadrado(criadordeQuadrado Quadrado) {
-        if (Quadrado.CAberta || Quadrado.CTemMina) {
+    void abrirCelula(Celula celula) {
+        if (celula.aberta) {
             return;
         }
 
-        Quadrado.CAberta = true;
-        Quadrado.setBackground(Color.WHITE);
+        if (celula.temMina) {
+            mostrarBombas();
+            return;
+        }
 
-        int minesFound = contadorDeMina(Quadrado.Linha, Quadrado.Coluna);
+        celula.aberta = true;
+        celula.setBackground(Color.WHITE);
 
-        if (minesFound > 0) {
-            Quadrado.setText(Integer.toString(minesFound));
+        int minasEncontradas = contadorDeMinas(celula.linha, celula.coluna);
+
+        if (minasEncontradas > 0) {
+            celula.setText(Integer.toString(minasEncontradas));
         } else {
-            abridorEmCadeia(Quadrado.Linha, Quadrado.Coluna);
+            abridorEmCadeia(celula.linha, celula.coluna);
         }
 
         NumeroDeQuadradosClicados++;
@@ -148,52 +205,50 @@ public class Minesweeper {
         }
     }
 
-    int contadorDeMina(int Linha, int Coluna) {
-        int minesFound = 0;
+    int contadorDeMinas(int linha, int coluna) {
+        int minasEncontradas = 0;
         for (int dr = -1; dr <= 1; dr++) {
             for (int dc = -1; dc <= 1; dc++) {
-                int nr = Linha + dr;
-                int nc = Coluna + dc;
+                int nr = linha + dr;
+                int nc = coluna + dc;
                 if (nr >= 0 && nr < NumeroDeLinhasTotal && nc >= 0 && nc < NumeroDeColunasTotal) {
-                    if (MatrizDoTabuleiro[nr][nc].CTemMina) {
-                        minesFound++;
+                    Celula vizinha = MatrizDoTabuleiro[nr][nc];
+                    if (vizinha instanceof CelulaBomba) {
+                        minasEncontradas++;
                     }
                 }
             }
         }
-        return minesFound;
+        return minasEncontradas;
     }
 
-    void abridorEmCadeia(int Linha, int Coluna) {
+    void abridorEmCadeia(int linha, int coluna) {
         for (int dr = -1; dr <= 1; dr++) {
             for (int dc = -1; dc <= 1; dc++) {
-                int nr = Linha + dr;
-                int nc = Coluna + dc;
+                int nr = linha + dr;
+                int nc = coluna + dc;
                 if (nr >= 0 && nr < NumeroDeLinhasTotal && nc >= 0 && nc < NumeroDeColunasTotal) {
-                    if (!MatrizDoTabuleiro[nr][nc].CAberta) {
-                        abrirQuadrado(MatrizDoTabuleiro[nr][nc]);
+                    Celula vizinha = MatrizDoTabuleiro[nr][nc];
+                    if (!vizinha.aberta) {
+                        abrirCelula(vizinha);
                     }
                 }
             }
         }
     }
 
-    void enfiaBandeira(criadordeQuadrado Quadrado) {
-        if (!Quadrado.CAberta) {
-            if (Quadrado.getText().isEmpty()) {
-                Quadrado.setText("🚩");
+    void marcarBandeira(Celula celula) {
+        if (!celula.aberta) {
+            if (celula.getText().isEmpty()) {
+                celula.setText("I");
             } else {
-                Quadrado.setText("");
+                celula.setText("");
             }
         }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new Minesweeper();
-            }
-        });
+    void trocarJogador() {
+        jogadorAtual = (jogadorAtual % totalJogadores) + 1;
+        TextoDeTopo.setText("Campo Minado: Jogador " + jogadorAtual);
     }
 }
