@@ -69,7 +69,6 @@ public class CampoMinado {
         }
     }
 
-    // Variáveis para controlar os jogadores
     private int jogadorAtual = 1;
     private int totalJogadores = 2;
 
@@ -81,6 +80,7 @@ public class CampoMinado {
 
     private JFrame JanelaInicial = new JFrame("Campo Minado");
     private JLabel TextoDeTopo = new JLabel();
+    private JLabel statusLabel = new JLabel();
     private JPanel PainelDoTexto = new JPanel();
     private JPanel PainelDosQuadradinhos = new JPanel();
 
@@ -100,11 +100,17 @@ public class CampoMinado {
 
         TextoDeTopo.setFont(new Font("Arial", Font.BOLD, 25));
         TextoDeTopo.setHorizontalAlignment(JLabel.CENTER);
-        TextoDeTopo.setText("Campo Minado: Jogador " + jogadorAtual);
+        TextoDeTopo.setText("Campo Minado");
         TextoDeTopo.setOpaque(true);
 
+        statusLabel.setFont(new Font("Arial", Font.BOLD, 20));
+        statusLabel.setHorizontalAlignment(JLabel.CENTER);
+        statusLabel.setText("Jogador " + jogadorAtual);
+
         PainelDoTexto.setLayout(new BorderLayout());
-        PainelDoTexto.add(TextoDeTopo);
+        PainelDoTexto.add(TextoDeTopo, BorderLayout.NORTH);
+        PainelDoTexto.add(statusLabel, BorderLayout.CENTER);
+
         JanelaInicial.add(PainelDoTexto, BorderLayout.NORTH);
 
         PainelDosQuadradinhos.setLayout(new GridLayout(NumeroDeLinhasTotal, NumeroDeColunasTotal));
@@ -173,7 +179,7 @@ public class CampoMinado {
         }
 
         FimDeJogo = true;
-        TextoDeTopo.setText("Game Over!");
+        atualizarStatusDoJogo();
     }
 
     void abrirCelula(Celula celula) {
@@ -201,7 +207,7 @@ public class CampoMinado {
 
         if (NumeroDeQuadradosClicados == NumeroDeLinhasTotal * NumeroDeColunasTotal - QuantidadeDeBombasNaPartida) {
             FimDeJogo = true;
-            TextoDeTopo.setText("Mines Cleared!");
+            statusLabel.setText("Campo Limpo!");
         }
     }
 
@@ -249,6 +255,14 @@ public class CampoMinado {
 
     void trocarJogador() {
         jogadorAtual = (jogadorAtual % totalJogadores) + 1;
-        TextoDeTopo.setText("Campo Minado: Jogador " + jogadorAtual);
+        atualizarStatusDoJogo();
+    }
+
+    void atualizarStatusDoJogo() {
+        if (FimDeJogo) {
+            statusLabel.setText("Fim de Jogo!");
+        } else {
+            statusLabel.setText("Jogador " + jogadorAtual);
+        }
     }
 }
