@@ -84,7 +84,11 @@ public class App {
         } else if (difficulty.equals("Fácil")) {
             new CampoMinadoFacil();
         } else if (difficulty.equals("Maluco")) {
-            new CampoMinadoMaluco();
+            
+            int linhas = 20;
+            int colunas = 20;
+            int bombas = 20;
+            new CampoMinadoMaluco(linhas, colunas, bombas);
         }
     }
 }
