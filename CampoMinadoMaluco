@@ -26,7 +26,7 @@ public class CampoMinadoMaluco {
             this.aberta = false;
             this.temMina = false;
             this.marcada = false;
-            this.maluca = random.nextDouble() < 0.3; // 30% chance de ser maluca
+            this.maluca = random.nextDouble() < 0.3;  
             this.setFont(new Font("Arial", Font.PLAIN, 25));
             this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
             this.setBackground(Color.LIGHT_GRAY);
@@ -96,7 +96,7 @@ public class CampoMinadoMaluco {
         private void abrirVizinhas() {
             for (int i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {
-                    if (i == 0 && j == 0) continue; // Pula a própria célula
+                    if (i == 0 && j == 0) continue;  
                     int linhaVizinha = linha + i;
                     int colunaVizinha = coluna + j;
                     if (linhaVizinha >= 0 && linhaVizinha < NumeroDeLinhasTotal && colunaVizinha >= 0 && colunaVizinha < NumeroDeColunasTotal) {
@@ -177,6 +177,6 @@ public class CampoMinadoMaluco {
     }
 
     public static void main(String[] args) {
-        new CampoMinadoMaluco(20, 20, 40); // Ajuste a quantidade de bombas conforme necessário
+        new CampoMinadoMaluco(20, 20, 40);  
     }
 }
