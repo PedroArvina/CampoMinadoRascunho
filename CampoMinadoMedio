@@ -123,12 +123,12 @@ public class CampoMinadoMedio {
     public CampoMinadoMedio() {
     	
     	try {
-            setNumeroDeLinhasTotal(20); // exemplo com 32, ajuste conforme necessário
-            setNumeroDeColunasTotal(20); // exemplo com 32, ajuste conforme necessário
-            setQuantidadeDeBombasNaPartida(30); // exemplo com 100, ajuste conforme necessário
+            setNumeroDeLinhasTotal(20);  
+            setNumeroDeColunasTotal(20);  
+            setQuantidadeDeBombasNaPartida(30);  
         } catch (InvalidAttributeValueException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Erro de Validação", JOptionPane.ERROR_MESSAGE);
-            return; // Interrompe a execução do construtor
+            return;  
         }
     	
         JanelaInicial.setSize(LarguraTabuleiro, AlturaTabuleiro);
