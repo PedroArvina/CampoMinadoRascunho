@@ -123,12 +123,12 @@ public class CampoMinadoFacil {
     public CampoMinadoFacil() {
     	
     	try {
-            setNumeroDeLinhasTotal(10); // exemplo com 32, ajuste conforme necessário
-            setNumeroDeColunasTotal(10); // exemplo com 32, ajuste conforme necessário
-            setQuantidadeDeBombasNaPartida(10); // exemplo com 100, ajuste conforme necessário
+            setNumeroDeLinhasTotal(10);  
+            setNumeroDeColunasTotal(10); 
+            setQuantidadeDeBombasNaPartida(10);
         } catch (InvalidAttributeValueException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Erro de Validação", JOptionPane.ERROR_MESSAGE);
-            return; // Interrompe a execução do construtor
+            return;  
         }
     	
         JanelaInicial.setSize(LarguraTabuleiro, AlturaTabuleiro);
