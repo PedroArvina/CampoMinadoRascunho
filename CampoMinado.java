@@ -123,12 +123,12 @@ public class CampoMinado {
     public CampoMinado() {
     	
     	try {
-            setNumeroDeLinhasTotal(32); // exemplo com 32, ajuste conforme necessário
-            setNumeroDeColunasTotal(32); // exemplo com 32, ajuste conforme necessário
-            setQuantidadeDeBombasNaPartida(100); // exemplo com 100, ajuste conforme necessário
+            setNumeroDeLinhasTotal(32);  
+            setNumeroDeColunasTotal(32);
+            setQuantidadeDeBombasNaPartida(100);  
         } catch (InvalidAttributeValueException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Erro de Validação", JOptionPane.ERROR_MESSAGE);
-            return; // Interrompe a execução do construtor
+            return;  
         }
     	
         JanelaInicial.setSize(LarguraTabuleiro, AlturaTabuleiro);
