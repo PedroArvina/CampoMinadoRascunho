@@ -21,7 +21,7 @@ public class App {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
 
-        // Título
+        
         JLabel titleLabel = new JLabel("Bem-vindo ao Campo Minado");
         titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
         gbc.gridx = 0;
@@ -29,7 +29,7 @@ public class App {
         gbc.gridwidth = 2;
         frame.add(titleLabel, gbc);
 
-        // Botões de jogo
+        
         JButton playButton = createButton("Difícil");
         JButton playButton2 = createButton("Médio");
         JButton playButton3 = createButton("Fácil");
@@ -49,14 +49,14 @@ public class App {
         gbc.gridx = 1;
         frame.add(playCrazyButton, gbc);
 
-        // Botão Sair
+        
         JButton exitButton = createButton("Sair");
         gbc.gridx = 0;
         gbc.gridy = 3;
         gbc.gridwidth = 2;
         frame.add(exitButton, gbc);
 
-        // Ação dos botões
+        
         playButton.addActionListener(e -> startGame("Difícil"));
         playButton2.addActionListener(e -> startGame("Médio"));
         playButton3.addActionListener(e -> startGame("Fácil"));
@@ -75,8 +75,7 @@ public class App {
     }
 
     private static void startGame(String difficulty) {
-        // Aqui você pode adicionar a lógica para iniciar o jogo com a dificuldade escolhida
-        // Por exemplo, iniciar as classes CampoMinado, CampoMinadoMedio, CampoMinadoFacil ou CampoMinadoMaluco
+        
         if (difficulty.equals("Difícil")) {
             new CampoMinado();
         } else if (difficulty.equals("Médio")) {
