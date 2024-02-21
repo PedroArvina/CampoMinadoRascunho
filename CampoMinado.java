@@ -175,6 +175,11 @@ public class CampoMinado{
         PainelDosQuadradinhos.setLayout(new GridLayout(NumeroDeLinhasTotal, NumeroDeColunasTotal));
         JanelaInicial.add(PainelDosQuadradinhos);
         
+
+        PainelDoTexto.setLayout(new BorderLayout());
+        PainelDoTexto.add(TextoDeTopo, BorderLayout.CENTER);
+        PainelDoTexto.add(statusLabel, BorderLayout.SOUTH);
+        PainelDoTexto.add(labelTempo, BorderLayout.EAST);
         
 
         for (int Linha = 0; Linha < NumeroDeLinhasTotal; Linha++) {
