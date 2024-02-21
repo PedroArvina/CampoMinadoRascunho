@@ -4,8 +4,17 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.Random;
+import campominado.gui.App;
 
-public class CampoMinado {
+
+public class CampoMinado{
+	
+	private JButton botaoVoltar = new JButton("Voltar"); 
+
+	private Timer cronometro;
+	private JLabel labelTempo;
+	private int segundosPassados = 0;
+
 	
 	public class InvalidAttributeValueException extends Exception {
 	    public InvalidAttributeValueException(String message) {
@@ -85,6 +94,7 @@ public class CampoMinado {
                     if (e.getButton() == MouseEvent.BUTTON1) {
                         revelar();
                         trocarJogador();
+                       
                     } else if (e.getButton() == MouseEvent.BUTTON3) {
                         marcarBandeira(CelulaBomba.this);
                     }
@@ -112,6 +122,7 @@ public class CampoMinado {
     private JLabel statusLabel = new JLabel();
     private JPanel PainelDoTexto = new JPanel();
     private JPanel PainelDosQuadradinhos = new JPanel();
+    
 
     private int QuantidadeDeBombasNaPartida = 100;
     private Celula[][] MatrizDoTabuleiro = new Celula[NumeroDeLinhasTotal][NumeroDeColunasTotal];
@@ -122,13 +133,22 @@ public class CampoMinado {
 
     public CampoMinado() {
     	
+    	 
+    	
+    	labelTempo = new JLabel("Tempo: 0", SwingConstants.CENTER);
+        labelTempo.setFont(new Font("Arial", Font.BOLD, 20));
+        PainelDoTexto.add(labelTempo, BorderLayout.EAST);
+
+        cronometro = new Timer(1000, e -> atualizarTempo());
+    
+    	
     	try {
-            setNumeroDeLinhasTotal(32);  
-            setNumeroDeColunasTotal(32);
-            setQuantidadeDeBombasNaPartida(100);  
+            setNumeroDeLinhasTotal(32); // exemplo com 32, ajuste conforme necessário
+            setNumeroDeColunasTotal(32); // exemplo com 32, ajuste conforme necessário
+            setQuantidadeDeBombasNaPartida(100); // exemplo com 100, ajuste conforme necessário
         } catch (InvalidAttributeValueException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Erro de Validação", JOptionPane.ERROR_MESSAGE);
-            return;  
+            return; // Interrompe a execução do construtor
         }
     	
         JanelaInicial.setSize(LarguraTabuleiro, AlturaTabuleiro);
@@ -154,6 +174,8 @@ public class CampoMinado {
 
         PainelDosQuadradinhos.setLayout(new GridLayout(NumeroDeLinhasTotal, NumeroDeColunasTotal));
         JanelaInicial.add(PainelDosQuadradinhos);
+        
+        
 
         for (int Linha = 0; Linha < NumeroDeLinhasTotal; Linha++) {
             for (int Coluna = 0; Coluna < NumeroDeColunasTotal; Coluna++) {
@@ -183,6 +205,20 @@ public class CampoMinado {
                 PainelDosQuadradinhos.add(celula);
             }
         }
+        
+
+    
+        botaoVoltar.setFont(new Font("Arial", Font.BOLD, 20));
+        botaoVoltar.setBackground(new Color(150, 150, 150)); 
+        botaoVoltar.setForeground(Color.WHITE); 
+        botaoVoltar.setBorder(BorderFactory.createRaisedBevelBorder()); 
+        botaoVoltar.setCursor(new Cursor(Cursor.HAND_CURSOR)); 
+        botaoVoltar.setMargin(new Insets(10, 20, 10, 20)); 
+        botaoVoltar.addActionListener(e -> voltarAoMenu());
+        PainelDoTexto.add(botaoVoltar, BorderLayout.SOUTH);
+
+
+
 
         JanelaInicial.setVisible(true);
         distribuidorDeBombas();
@@ -206,6 +242,11 @@ public class CampoMinado {
         PainelDosQuadradinhos.revalidate();
         PainelDosQuadradinhos.repaint();
     }
+    
+    private void atualizarTempo() {
+        segundosPassados++;
+        labelTempo.setText("Tempo: " + segundosPassados);
+    }
 
     void mostrarBombas() {
         for (int linha = 0; linha < NumeroDeLinhasTotal; linha++) {
@@ -216,7 +257,8 @@ public class CampoMinado {
                 }
             }
         }
-
+        
+        cronometro.stop();
         FimDeJogo = true;
         atualizarStatusDoJogo();
     }
@@ -291,10 +333,19 @@ public class CampoMinado {
             }
         }
     }
+    
+    private void voltarAoMenu() {
+        JanelaInicial.dispose(); // Fecha a janela atual
+        App.createAndShowGUI(); // Mostra a janela do menu principal
+    }
+
 
     void trocarJogador() {
         jogadorAtual = (jogadorAtual % totalJogadores) + 1;
         atualizarStatusDoJogo();
+        if (!cronometro.isRunning()) {
+            cronometro.start();
+        }
     }
 
     void atualizarStatusDoJogo() {
