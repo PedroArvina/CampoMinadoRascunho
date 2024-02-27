@@ -1,339 +1,101 @@
-package campominado12;
+package campominado.gui;
 
+import campominado12.CampoMinado;
+import campominado12.CampoMinadoMedio;
+import campominado12.CampoMinadoFacil;
+import campominado12.CampoMinadoMaluco;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.*;
-import java.util.Random;
-import campominado.gui.App;
 
+public class App {
+    private static JFrame frame; // Referência estática para a janela do menu principal
 
-public class CampoMinado{
-	
-	private JButton botaoVoltar = new JButton("Voltar"); 
-
-	
-	public class InvalidAttributeValueException extends Exception {
-	    public InvalidAttributeValueException(String message) {
-	        super(message);
-	    }
-	}
-	
-	public void setNumeroDeLinhasTotal(int numeroDeLinhasTotal) throws InvalidAttributeValueException {
-        if (numeroDeLinhasTotal <= 0) {
-            throw new InvalidAttributeValueException("Número de linhas deve ser maior que zero.");
-        }
-        this.NumeroDeLinhasTotal = numeroDeLinhasTotal;
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> createAndShowGUI());
     }
 
-    public void setNumeroDeColunasTotal(int numeroDeColunasTotal) throws InvalidAttributeValueException {
-        if (numeroDeColunasTotal <= 0) {
-            throw new InvalidAttributeValueException("Número de colunas deve ser maior que zero.");
+    public static void createAndShowGUI() {
+        if (frame == null) {
+            frame = new JFrame("Menu Campo Minado");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(400, 300);
+            frame.setLayout(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(10, 10, 10, 10);
+
+            JLabel titleLabel = new JLabel("Bem-vindo ao Campo Minado");
+            titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.gridwidth = 2;
+            frame.add(titleLabel, gbc);
+
+            JButton playButton = createButton("Difícil");
+            JButton playButton2 = createButton("Médio");
+            JButton playButton3 = createButton("Fácil");
+            JButton playCrazyButton = createButton("Maluco");
+            JButton scoreButton = createButton("Placar"); // Botão Placar adicionado
+
+            gbc.gridy = 1;
+            gbc.gridwidth = 1;
+            frame.add(playButton, gbc);
+
+            gbc.gridx = 1;
+            frame.add(playButton2, gbc);
+
+            gbc.gridx = 0;
+            gbc.gridy = 2;
+            frame.add(playButton3, gbc);
+
+            gbc.gridx = 1;
+            frame.add(playCrazyButton, gbc);
+
+            gbc.gridx = 0;
+            gbc.gridy = 3;
+            frame.add(scoreButton, gbc); // Posicionando o botão Placar
+
+            JButton exitButton = createButton("Sair");
+            gbc.gridx = 1;
+            frame.add(exitButton, gbc);
+
+            playButton.addActionListener(e -> startGame("Difícil"));
+            playButton2.addActionListener(e -> startGame("Médio"));
+            playButton3.addActionListener(e -> startGame("Fácil"));
+            playCrazyButton.addActionListener(e -> startGame("Maluco"));
+            scoreButton.addActionListener(e -> placar()); // Adicionando ação ao botão Placar
+            exitButton.addActionListener(e -> System.exit(0));
         }
-        this.NumeroDeColunasTotal = numeroDeColunasTotal;
+
+        frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
     }
 
-    public void setQuantidadeDeBombasNaPartida(int quantidadeDeBombasNaPartida) throws InvalidAttributeValueException {
-        if (quantidadeDeBombasNaPartida <= 0 || quantidadeDeBombasNaPartida > NumeroDeLinhasTotal * NumeroDeColunasTotal) {
-            throw new InvalidAttributeValueException("Quantidade de bombas inválida.");
-        }
-        this.QuantidadeDeBombasNaPartida = quantidadeDeBombasNaPartida;
-    }
-	
-	
-    public abstract class Celula extends JButton {
-        public int linha;
-        public int coluna;
-        public boolean aberta;
-        public boolean temMina;
-
-        public Celula(int linha, int coluna) {
-            this.linha = linha;
-            this.coluna = coluna;
-            this.aberta = false;
-            this.temMina = false;
-        }
-
-        public abstract void revelar();
+    private static JButton createButton(String label) {
+        JButton button = new JButton(label);
+        button.setPreferredSize(new Dimension(150, 40));
+        button.setFont(new Font("Arial", Font.PLAIN, 14));
+        return button;
     }
 
-    public class CelulaVazia extends Celula {
-        public CelulaVazia(int linha, int coluna) {
-            super(linha, coluna);
-        }
-
-        @Override
-        public void revelar() {
-            if (!this.aberta) {
-                abrirCelula(this);
-                trocarJogador();
-            }
-        }
-    }
-
-    public class CelulaBomba extends Celula {
-        public CelulaBomba(int linha, int coluna) {
-            super(linha, coluna);
-            this.temMina = true;
-
-            this.setFocusable(false);
-            this.setMargin(new Insets(0, 0, 0, 0));
-            this.setFont(new Font("Arial", Font.PLAIN, 25));
-            this.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-            this.setBackground(Color.LIGHT_GRAY);
-
-            this.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mousePressed(MouseEvent e) {
-                    if (FimDeJogo || aberta) {
-                        return;
-                    }
-                    if (e.getButton() == MouseEvent.BUTTON1) {
-                        revelar();
-                        trocarJogador();
-                    } else if (e.getButton() == MouseEvent.BUTTON3) {
-                        marcarBandeira(CelulaBomba.this);
-                    }
-                }
-            });
-        }
-
-        @Override
-        public void revelar() {
-            mostrarBombas();
+    private static void startGame(String difficulty) {
+        if (difficulty.equals("Difícil")) {
+            new CampoMinado();
+        } else if (difficulty.equals("Médio")) {
+            new CampoMinadoMedio();
+        } else if (difficulty.equals("Fácil")) {
+            new CampoMinadoFacil();
+        } else if (difficulty.equals("Maluco")) {
+            int linhas = 20;
+            int colunas = 20;
+            int bombas = 20;
+            new CampoMinadoMaluco(linhas, colunas, bombas);
         }
     }
 
-    private int jogadorAtual = 1;
-    private int totalJogadores = 2;
-    private String nomeDoUsuario;
-
-
-    private int TamanhoDosQuadradinhos = 40;
-    private int NumeroDeLinhasTotal = 32;
-    private int NumeroDeColunasTotal = NumeroDeLinhasTotal;
-    private int LarguraTabuleiro = NumeroDeColunasTotal * TamanhoDosQuadradinhos;
-    private int AlturaTabuleiro = NumeroDeLinhasTotal * TamanhoDosQuadradinhos;
-
-    private JFrame JanelaInicial = new JFrame("Campo Minado");
-    private JLabel TextoDeTopo = new JLabel();
-    private JLabel statusLabel = new JLabel();
-    private JPanel PainelDoTexto = new JPanel();
-    private JPanel PainelDosQuadradinhos = new JPanel();
-
-    private int QuantidadeDeBombasNaPartida = 100;
-    private Celula[][] MatrizDoTabuleiro = new Celula[NumeroDeLinhasTotal][NumeroDeColunasTotal];
-    private Random random = new Random();
-
-    private int NumeroDeQuadradosClicados = 0;
-    private boolean FimDeJogo = false;
-
-    public CampoMinado() {
-    	
-    	nomeDoUsuario = JOptionPane.showInputDialog(JanelaInicial, "Digite o nome da Equipe:", "Bem-vindo ao Campo Minado", JOptionPane.PLAIN_MESSAGE);
-        if (nomeDoUsuario == null || nomeDoUsuario.trim().isEmpty()) {
-            nomeDoUsuario = "Jogador";
-        }
-    	
-    	try {
-            setNumeroDeLinhasTotal(32); // exemplo com 32, ajuste conforme necessário
-            setNumeroDeColunasTotal(32); // exemplo com 32, ajuste conforme necessário
-            setQuantidadeDeBombasNaPartida(100); // exemplo com 100, ajuste conforme necessário
-        } catch (InvalidAttributeValueException e) {
-            JOptionPane.showMessageDialog(null, e.getMessage(), "Erro de Validação", JOptionPane.ERROR_MESSAGE);
-            return; // Interrompe a execução do construtor
-        }
-    	
-        JanelaInicial.setSize(LarguraTabuleiro, AlturaTabuleiro);
-        JanelaInicial.setLocationRelativeTo(null);
-        JanelaInicial.setResizable(false);
-        JanelaInicial.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        JanelaInicial.setLayout(new BorderLayout());
-
-        TextoDeTopo.setFont(new Font("Arial", Font.BOLD, 25));
-        TextoDeTopo.setHorizontalAlignment(JLabel.CENTER);
-        TextoDeTopo.setText("Campo Minado");
-        TextoDeTopo.setOpaque(true);
-
-        statusLabel.setFont(new Font("Arial", Font.BOLD, 20));
-        statusLabel.setHorizontalAlignment(JLabel.CENTER);
-        statusLabel.setText("Jogador " + jogadorAtual);
-
-        PainelDoTexto.setLayout(new BorderLayout());
-        PainelDoTexto.add(TextoDeTopo, BorderLayout.NORTH);
-        PainelDoTexto.add(statusLabel, BorderLayout.CENTER);
-
-        JanelaInicial.add(PainelDoTexto, BorderLayout.NORTH);
-
-        PainelDosQuadradinhos.setLayout(new GridLayout(NumeroDeLinhasTotal, NumeroDeColunasTotal));
-        JanelaInicial.add(PainelDosQuadradinhos);
-
-        for (int Linha = 0; Linha < NumeroDeLinhasTotal; Linha++) {
-            for (int Coluna = 0; Coluna < NumeroDeColunasTotal; Coluna++) {
-                Celula celula = new CelulaVazia(Linha, Coluna);
-                MatrizDoTabuleiro[Linha][Coluna] = celula;
-
-                celula.setFocusable(false);
-                celula.setMargin(new Insets(0, 0, 0, 0));
-                celula.setFont(new Font("Arial", Font.PLAIN, 25));
-                celula.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-                celula.setBackground(Color.LIGHT_GRAY);
-
-                celula.addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mousePressed(MouseEvent e) {
-                        if (FimDeJogo || celula.aberta) {
-                            return;
-                        }
-                        if (e.getButton() == MouseEvent.BUTTON1) {
-                            celula.revelar();
-                        } else if (e.getButton() == MouseEvent.BUTTON3) {
-                            marcarBandeira(celula);
-                        }
-                    }
-                });
-
-                PainelDosQuadradinhos.add(celula);
-            }
-        }
-        
-
-    
-        botaoVoltar.setFont(new Font("Arial", Font.BOLD, 20));
-        botaoVoltar.setBackground(new Color(150, 150, 150)); 
-        botaoVoltar.setForeground(Color.WHITE); 
-        botaoVoltar.setBorder(BorderFactory.createRaisedBevelBorder()); 
-        botaoVoltar.setCursor(new Cursor(Cursor.HAND_CURSOR)); 
-        botaoVoltar.setMargin(new Insets(10, 20, 10, 20)); 
-        botaoVoltar.addActionListener(e -> voltarAoMenu());
-        PainelDoTexto.add(botaoVoltar, BorderLayout.SOUTH);
-
-
-
-
-        JanelaInicial.setVisible(true);
-        distribuidorDeBombas();
-    }
-
-    void distribuidorDeBombas() {
-        int bombasRestantes = QuantidadeDeBombasNaPartida;
-        while (bombasRestantes > 0) {
-            int linha = random.nextInt(NumeroDeLinhasTotal);
-            int coluna = random.nextInt(NumeroDeColunasTotal);
-
-            Celula celula = MatrizDoTabuleiro[linha][coluna];
-            if (!(celula instanceof CelulaBomba)) {
-                PainelDosQuadradinhos.remove(celula);
-                Celula novaCelula = new CelulaBomba(linha, coluna);
-                MatrizDoTabuleiro[linha][coluna] = novaCelula;
-                PainelDosQuadradinhos.add(novaCelula, linha * NumeroDeColunasTotal + coluna);
-                bombasRestantes--;
-            }
-        }
-        PainelDosQuadradinhos.revalidate();
-        PainelDosQuadradinhos.repaint();
-    }
-
-    void mostrarBombas() {
-        for (int linha = 0; linha < NumeroDeLinhasTotal; linha++) {
-            for (int coluna = 0; coluna < NumeroDeColunasTotal; coluna++) {
-                Celula celula = MatrizDoTabuleiro[linha][coluna];
-                if (celula instanceof CelulaBomba) {
-                    celula.setText("O");
-                }
-            }
-        }
-
-        FimDeJogo = true;
-        atualizarStatusDoJogo();
-    }
-
-    void abrirCelula(Celula celula) {
-        if (celula.aberta) {
-            return;
-        }
-
-        if (celula.temMina) {
-            mostrarBombas();
-            return;
-        }
-
-        celula.aberta = true;
-        celula.setBackground(Color.WHITE);
-
-        int minasEncontradas = contadorDeMinas(celula.linha, celula.coluna);
-
-        if (minasEncontradas > 0) {
-            celula.setText(Integer.toString(minasEncontradas));
-        } else {
-            abridorEmCadeia(celula.linha, celula.coluna);
-        }
-
-        NumeroDeQuadradosClicados++;
-
-        if (NumeroDeQuadradosClicados == NumeroDeLinhasTotal * NumeroDeColunasTotal - QuantidadeDeBombasNaPartida) {
-            FimDeJogo = true;
-            statusLabel.setText("Campo Limpo!");
-        }
-    }
-
-    int contadorDeMinas(int linha, int coluna) {
-        int minasEncontradas = 0;
-        for (int dr = -1; dr <= 1; dr++) {
-            for (int dc = -1; dc <= 1; dc++) {
-                int nr = linha + dr;
-                int nc = coluna + dc;
-                if (nr >= 0 && nr < NumeroDeLinhasTotal && nc >= 0 && nc < NumeroDeColunasTotal) {
-                    Celula vizinha = MatrizDoTabuleiro[nr][nc];
-                    if (vizinha instanceof CelulaBomba) {
-                        minasEncontradas++;
-                    }
-                }
-            }
-        }
-        return minasEncontradas;
-    }
-
-    void abridorEmCadeia(int linha, int coluna) {
-        for (int dr = -1; dr <= 1; dr++) {
-            for (int dc = -1; dc <= 1; dc++) {
-                int nr = linha + dr;
-                int nc = coluna + dc;
-                if (nr >= 0 && nr < NumeroDeLinhasTotal && nc >= 0 && nc < NumeroDeColunasTotal) {
-                    Celula vizinha = MatrizDoTabuleiro[nr][nc];
-                    if (!vizinha.aberta) {
-                        abrirCelula(vizinha);
-                    }
-                }
-            }
-        }
-    }
-
-    void marcarBandeira(Celula celula) {
-        if (!celula.aberta) {
-            if (celula.getText().isEmpty()) {
-                celula.setText("I");
-            } else {
-                celula.setText("");
-            }
-        }
-    }
-    
-    private void voltarAoMenu() {
-        JanelaInicial.dispose(); // Fecha a janela atual
-        App.createAndShowGUI(); // Mostra a janela do menu principal
-    }
-
-
-    void trocarJogador() {
-        jogadorAtual = (jogadorAtual % totalJogadores) + 1;
-        atualizarStatusDoJogo();
-    }
-
-    void atualizarStatusDoJogo() {
-        if (FimDeJogo) {
-            statusLabel.setText("Fim de Jogo!");
-        } else {
-            statusLabel.setText("Jogador " + jogadorAtual);
-        }
+    // Função Placar (esqueleto básico)
+    private static void placar() {
+        // Implemente a lógica de exibição do placar aqui
+        JOptionPane.showMessageDialog(frame, "Placar ainda não implementado.");
     }
 }
