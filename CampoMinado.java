@@ -107,6 +107,8 @@ public class CampoMinado{
     private int totalJogadores = 2;
     private String nomeDoUsuario;
     private int pontuacao = 0;
+    private String nomeDaEquipe;
+
 
     private int TamanhoDosQuadradinhos = 40;
     private int NumeroDeLinhasTotal = 32;
@@ -130,9 +132,9 @@ public class CampoMinado{
     public CampoMinado() {
     	
     	nomeDoUsuario = JOptionPane.showInputDialog(JanelaInicial, "Digite o nome da Equipe:", "Bem-vindo ao Campo Minado", JOptionPane.PLAIN_MESSAGE);
-        if (nomeDoUsuario == null || nomeDoUsuario.trim().isEmpty()) {
-            nomeDoUsuario = "Jogador";
-        }
+    	if (nomeDoUsuario == null || nomeDoUsuario.trim().isEmpty()) {
+    	    nomeDoUsuario = "Jogador"; // Definir um nome padrão se nenhum nome for fornecido
+    	}
     	
     	try {
             setNumeroDeLinhasTotal(32); // exemplo com 32, ajuste conforme necessário
@@ -343,7 +345,7 @@ public class CampoMinado{
 
     void atualizarStatusDoJogo() {
         if (FimDeJogo) {
-        	statusLabel.setText("Fim de Jogo! Pontuação: " + pontuacao);
+        	statusLabel.setText("Parabéns, Equipe " + nomeDoUsuario + "!. Pontuação: " + pontuacao);
         } else {
             statusLabel.setText("Jogador " + jogadorAtual);
         }
