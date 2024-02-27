@@ -11,10 +11,6 @@ public class CampoMinado{
 	
 	private JButton botaoVoltar = new JButton("Voltar"); 
 
-	private Timer cronometro;
-	private JLabel labelTempo;
-	private int segundosPassados = 0;
-
 	
 	public class InvalidAttributeValueException extends Exception {
 	    public InvalidAttributeValueException(String message) {
@@ -94,7 +90,6 @@ public class CampoMinado{
                     if (e.getButton() == MouseEvent.BUTTON1) {
                         revelar();
                         trocarJogador();
-                       
                     } else if (e.getButton() == MouseEvent.BUTTON3) {
                         marcarBandeira(CelulaBomba.this);
                     }
@@ -110,6 +105,8 @@ public class CampoMinado{
 
     private int jogadorAtual = 1;
     private int totalJogadores = 2;
+    private String nomeDoUsuario;
+
 
     private int TamanhoDosQuadradinhos = 40;
     private int NumeroDeLinhasTotal = 32;
@@ -122,7 +119,6 @@ public class CampoMinado{
     private JLabel statusLabel = new JLabel();
     private JPanel PainelDoTexto = new JPanel();
     private JPanel PainelDosQuadradinhos = new JPanel();
-    
 
     private int QuantidadeDeBombasNaPartida = 100;
     private Celula[][] MatrizDoTabuleiro = new Celula[NumeroDeLinhasTotal][NumeroDeColunasTotal];
@@ -133,14 +129,10 @@ public class CampoMinado{
 
     public CampoMinado() {
     	
-    	 
-    	
-    	labelTempo = new JLabel("Tempo: 0", SwingConstants.CENTER);
-        labelTempo.setFont(new Font("Arial", Font.BOLD, 20));
-        PainelDoTexto.add(labelTempo, BorderLayout.EAST);
-
-        cronometro = new Timer(1000, e -> atualizarTempo());
-    
+    	nomeDoUsuario = JOptionPane.showInputDialog(JanelaInicial, "Digite o nome da Equipe:", "Bem-vindo ao Campo Minado", JOptionPane.PLAIN_MESSAGE);
+        if (nomeDoUsuario == null || nomeDoUsuario.trim().isEmpty()) {
+            nomeDoUsuario = "Jogador";
+        }
     	
     	try {
             setNumeroDeLinhasTotal(32); // exemplo com 32, ajuste conforme necessário
@@ -174,13 +166,6 @@ public class CampoMinado{
 
         PainelDosQuadradinhos.setLayout(new GridLayout(NumeroDeLinhasTotal, NumeroDeColunasTotal));
         JanelaInicial.add(PainelDosQuadradinhos);
-        
-
-        PainelDoTexto.setLayout(new BorderLayout());
-        PainelDoTexto.add(TextoDeTopo, BorderLayout.CENTER);
-        PainelDoTexto.add(statusLabel, BorderLayout.SOUTH);
-        PainelDoTexto.add(labelTempo, BorderLayout.EAST);
-        
 
         for (int Linha = 0; Linha < NumeroDeLinhasTotal; Linha++) {
             for (int Coluna = 0; Coluna < NumeroDeColunasTotal; Coluna++) {
@@ -247,11 +232,6 @@ public class CampoMinado{
         PainelDosQuadradinhos.revalidate();
         PainelDosQuadradinhos.repaint();
     }
-    
-    private void atualizarTempo() {
-        segundosPassados++;
-        labelTempo.setText("Tempo: " + segundosPassados);
-    }
 
     void mostrarBombas() {
         for (int linha = 0; linha < NumeroDeLinhasTotal; linha++) {
@@ -262,8 +242,7 @@ public class CampoMinado{
                 }
             }
         }
-        
-        cronometro.stop();
+
         FimDeJogo = true;
         atualizarStatusDoJogo();
     }
@@ -348,9 +327,6 @@ public class CampoMinado{
     void trocarJogador() {
         jogadorAtual = (jogadorAtual % totalJogadores) + 1;
         atualizarStatusDoJogo();
-        if (!cronometro.isRunning()) {
-            cronometro.start();
-        }
     }
 
     void atualizarStatusDoJogo() {
