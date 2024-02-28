@@ -147,16 +147,16 @@ public class CampoMinado{
     	
     	nomeDoUsuario = JOptionPane.showInputDialog(JanelaInicial, "Digite o nome da Equipe:", "Bem-vindo ao Campo Minado", JOptionPane.PLAIN_MESSAGE);
     	if (nomeDoUsuario == null || nomeDoUsuario.trim().isEmpty()) {
-    	    nomeDoUsuario = "Jogador"; // Definir um nome padrão se nenhum nome for fornecido
+    	    nomeDoUsuario = "Jogador"; 
     	}
     	
     	try {
-            setNumeroDeLinhasTotal(32); // exemplo com 32, ajuste conforme necessário
-            setNumeroDeColunasTotal(32); // exemplo com 32, ajuste conforme necessário
-            setQuantidadeDeBombasNaPartida(100); // exemplo com 100, ajuste conforme necessário
+            setNumeroDeLinhasTotal(32); 
+            setNumeroDeColunasTotal(32);
+            setQuantidadeDeBombasNaPartida(100); 
         } catch (InvalidAttributeValueException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Erro de Validação", JOptionPane.ERROR_MESSAGE);
-            return; // Interrompe a execução do construtor
+            return;
         }
     	
         JanelaInicial.setSize(LarguraTabuleiro, AlturaTabuleiro);
@@ -260,7 +260,7 @@ public class CampoMinado{
         }
 
         FimDeJogo = true;
-        atualizarPontuacao(); // Atualiza a pontuação no final do jogo
+        atualizarPontuacao();
     }
     
     private void atualizarPontuacao() {
@@ -277,7 +277,7 @@ public class CampoMinado{
             return;
         }
         if (!celula.temMina) {
-            pontuacao += 1; // Adiciona pontos ao abrir uma célula sem bomba
+            pontuacao += 1;
             atualizarPontuacao();
         } else {
             mostrarBombas();
@@ -301,7 +301,7 @@ public class CampoMinado{
         if (NumeroDeQuadradosClicados == NumeroDeLinhasTotal * NumeroDeColunasTotal - QuantidadeDeBombasNaPartida) {
             FimDeJogo = true;
             salvarPontuacao();
-            statusLabel.setText("Parabéns! Você limpou o campo. Pontuação: " + pontuacao); // Mensagem de vitória com pontuação
+            statusLabel.setText("Parabéns! Você limpou o campo. Pontuação: " + pontuacao);
         }
     }
 
@@ -350,8 +350,8 @@ public class CampoMinado{
     }
     
     private void voltarAoMenu() {
-        JanelaInicial.dispose(); // Fecha a janela atual
-        App.createAndShowGUI(); // Mostra a janela do menu principal
+        JanelaInicial.dispose(); 
+        App.createAndShowGUI(); 
     }
 
 
