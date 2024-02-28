@@ -5,11 +5,24 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.util.Random;
 import campominado.gui.App;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 
 public class CampoMinado{
 	
-	private JButton botaoVoltar = new JButton("Voltar"); 
+	private JButton botaoVoltar = new JButton("Voltar");
+	
+	private void salvarPontuacao() {
+	    String arquivoDePontuacoes = "pontuacoes.txt";
+	    try (BufferedWriter bw = new BufferedWriter(new FileWriter(arquivoDePontuacoes, true))) {
+	        bw.write(nomeDoUsuario + "," + pontuacao);
+	        bw.newLine();
+	    } catch (IOException e) {
+	        System.out.println("Erro ao salvar a pontuação: " + e.getMessage());
+	    }
+	}
 
 	
 	public class InvalidAttributeValueException extends Exception {
@@ -100,6 +113,7 @@ public class CampoMinado{
         @Override
         public void revelar() {
             mostrarBombas();
+            salvarPontuacao();
         }
     }
 
@@ -286,6 +300,7 @@ public class CampoMinado{
 
         if (NumeroDeQuadradosClicados == NumeroDeLinhasTotal * NumeroDeColunasTotal - QuantidadeDeBombasNaPartida) {
             FimDeJogo = true;
+            salvarPontuacao();
             statusLabel.setText("Parabéns! Você limpou o campo. Pontuação: " + pontuacao); // Mensagem de vitória com pontuação
         }
     }
@@ -321,6 +336,8 @@ public class CampoMinado{
             }
         }
     }
+    
+    
 
     void marcarBandeira(Celula celula) {
         if (!celula.aberta) {
