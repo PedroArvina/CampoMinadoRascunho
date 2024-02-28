@@ -10,6 +10,10 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.List;
+import java.util.ArrayList;
+
+
 
 
 
@@ -100,21 +104,74 @@ public class App {
         }
     }
     
-    
+    public static void atualizarTop10Pontuacoes() {
+        String arquivoDePontuacoes = "pontuacoes.txt";
+        List<String[]> scores = new ArrayList<>();
 
-    private static void placar() {
-        StringBuilder placar = new StringBuilder();
-        try (BufferedReader br = new BufferedReader(new FileReader("pontuacoes.txt"))) {
+        // Ler todas as pontuações
+        try (BufferedReader br = new BufferedReader(new FileReader(arquivoDePontuacoes))) {
             String linha;
             while ((linha = br.readLine()) != null) {
-                placar.append(linha).append("\n");
+                String[] parts = linha.split(",");
+                // Certifique-se de que cada linha tem o formato esperado
+                if (parts.length == 2) {
+                    scores.add(parts);
+                }
             }
         } catch (IOException e) {
             System.out.println("Erro ao ler o arquivo de pontuações: " + e.getMessage());
-            placar = new StringBuilder("Não foi possível carregar o placar.");
+            return;
         }
 
-        JOptionPane.showMessageDialog(frame, placar.length() == 0 ? "Nenhuma pontuação registrada." : placar.toString(), "Placar", JOptionPane.INFORMATION_MESSAGE);
+        // Ordenar as pontuações
+        scores.sort((a, b) -> Integer.compare(Integer.parseInt(b[1].trim()), Integer.parseInt(a[1].trim())));
+
+        // Manter apenas os 10 melhores
+        List<String[]> top10Scores = scores.subList(0, Math.min(10, scores.size()));
+
+        // Reescrever o arquivo com os 10 melhores
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(arquivoDePontuacoes, false))) {
+            for (String[] score : top10Scores) {
+                bw.write(score[0] + "," + score[1]);
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Erro ao escrever no arquivo de pontuações: " + e.getMessage());
+        }
+    }
+
+
+    private static void placar() {
+    	
+        List<String[]> scores = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader("pontuacoes.txt"))) {
+            String linha;
+            while ((linha = br.readLine()) != null) {
+                String[] parts = linha.split(",");
+                scores.add(parts);
+            }
+        } catch (IOException e) {
+            System.out.println("Erro ao ler o arquivo de pontuações: " + e.getMessage());
+            JOptionPane.showMessageDialog(frame, "Não foi possível carregar o placar.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Ordenando as pontuações
+        scores.sort((a, b) -> Integer.compare(Integer.parseInt(b[1]), Integer.parseInt(a[1])));
+
+        // Criando a tabela
+        String[] columnNames = {"Nome do Jogador", "Pontuação"};
+        String[][] data = new String[scores.size()][2];
+        for (int i = 0; i < scores.size(); i++) {
+            data[i] = scores.get(i);
+        }
+
+        JTable table = new JTable(data, columnNames);
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+
+        // Exibindo a tabela em um JOptionPane
+        JOptionPane.showMessageDialog(frame, scrollPane, "Placar", JOptionPane.INFORMATION_MESSAGE);
     }
 
 }
