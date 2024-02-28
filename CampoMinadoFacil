@@ -151,16 +151,16 @@ private JButton botaoVoltar = new JButton("Voltar");
     	
     	nomeDoUsuario = JOptionPane.showInputDialog(JanelaInicial, "Digite o nome da Equipe:", "Bem-vindo ao Campo Minado", JOptionPane.PLAIN_MESSAGE);
     	if (nomeDoUsuario == null || nomeDoUsuario.trim().isEmpty()) {
-    	    nomeDoUsuario = "Jogador"; // Definir um nome padrão se nenhum nome for fornecido
+    	    nomeDoUsuario = "Jogador";
     	}
     	
     	try {
-            setNumeroDeLinhasTotal(10); // exemplo com 32, ajuste conforme necessário
-            setNumeroDeColunasTotal(10); // exemplo com 32, ajuste conforme necessário
-            setQuantidadeDeBombasNaPartida(10); // exemplo com 100, ajuste conforme necessário
+            setNumeroDeLinhasTotal(10);
+            setNumeroDeColunasTotal(10);
+            setQuantidadeDeBombasNaPartida(10);
         } catch (InvalidAttributeValueException e) {
             JOptionPane.showMessageDialog(null, e.getMessage(), "Erro de Validação", JOptionPane.ERROR_MESSAGE);
-            return; // Interrompe a execução do construtor
+            return;
         }
     	
         JanelaInicial.setSize(LarguraTabuleiro, AlturaTabuleiro);
@@ -264,7 +264,7 @@ private JButton botaoVoltar = new JButton("Voltar");
         }
 
         FimDeJogo = true;
-        atualizarPontuacao(); // Atualiza a pontuação no final do jogo
+        atualizarPontuacao();
     }
     
     private void atualizarPontuacao() {
@@ -281,7 +281,7 @@ private JButton botaoVoltar = new JButton("Voltar");
             return;
         }
         if (!celula.temMina) {
-            pontuacao += 1; // Adiciona pontos ao abrir uma célula sem bomba
+            pontuacao += 1;
             atualizarPontuacao();
         } else {
             mostrarBombas();
@@ -305,7 +305,7 @@ private JButton botaoVoltar = new JButton("Voltar");
         if (NumeroDeQuadradosClicados == NumeroDeLinhasTotal * NumeroDeColunasTotal - QuantidadeDeBombasNaPartida) {
             FimDeJogo = true;
             salvarPontuacao();
-            statusLabel.setText("Parabéns! Você limpou o campo. Pontuação: " + pontuacao); // Mensagem de vitória com pontuação
+            statusLabel.setText("Parabéns! Você limpou o campo. Pontuação: " + pontuacao);
         }
     }
 
@@ -354,8 +354,8 @@ private JButton botaoVoltar = new JButton("Voltar");
     }
     
     private void voltarAoMenu() {
-        JanelaInicial.dispose(); // Fecha a janela atual
-        App.createAndShowGUI(); // Mostra a janela do menu principal
+        JanelaInicial.dispose();
+        App.createAndShowGUI();
     }
 
 
