@@ -20,7 +20,7 @@ import java.util.ArrayList;
 public class App {
 	
 	
-    private static JFrame frame; // Referência estática para a janela do menu principal
+    private static JFrame frame;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> createAndShowGUI());
@@ -46,7 +46,7 @@ public class App {
             JButton playButton2 = createButton("Médio");
             JButton playButton3 = createButton("Fácil");
             JButton playCrazyButton = createButton("Maluco");
-            JButton scoreButton = createButton("Placar"); // Botão Placar adicionado
+            JButton scoreButton = createButton("Placar");
 
             gbc.gridy = 1;
             gbc.gridwidth = 1;
@@ -64,7 +64,7 @@ public class App {
 
             gbc.gridx = 0;
             gbc.gridy = 3;
-            frame.add(scoreButton, gbc); // Posicionando o botão Placar
+            frame.add(scoreButton, gbc);
 
             JButton exitButton = createButton("Sair");
             gbc.gridx = 1;
@@ -74,7 +74,7 @@ public class App {
             playButton2.addActionListener(e -> startGame("Médio"));
             playButton3.addActionListener(e -> startGame("Fácil"));
             playCrazyButton.addActionListener(e -> startGame("Maluco"));
-            scoreButton.addActionListener(e -> placar()); // Adicionando ação ao botão Placar
+            scoreButton.addActionListener(e -> placar());
             exitButton.addActionListener(e -> System.exit(0));
         }
 
@@ -97,10 +97,8 @@ public class App {
         } else if (difficulty.equals("Fácil")) {
             new CampoMinadoFacil();
         } else if (difficulty.equals("Maluco")) {
-            int linhas = 20;
-            int colunas = 20;
-            int bombas = 20;
-            new CampoMinadoMaluco(linhas, colunas, bombas);
+            
+            new CampoMinadoMaluco();
         }
     }
     
@@ -108,12 +106,12 @@ public class App {
         String arquivoDePontuacoes = "pontuacoes.txt";
         List<String[]> scores = new ArrayList<>();
 
-        // Ler todas as pontuações
+        
         try (BufferedReader br = new BufferedReader(new FileReader(arquivoDePontuacoes))) {
             String linha;
             while ((linha = br.readLine()) != null) {
                 String[] parts = linha.split(",");
-                // Certifique-se de que cada linha tem o formato esperado
+                
                 if (parts.length == 2) {
                     scores.add(parts);
                 }
@@ -123,13 +121,13 @@ public class App {
             return;
         }
 
-        // Ordenar as pontuações
+        
         scores.sort((a, b) -> Integer.compare(Integer.parseInt(b[1].trim()), Integer.parseInt(a[1].trim())));
 
-        // Manter apenas os 10 melhores
+        
         List<String[]> top10Scores = scores.subList(0, Math.min(10, scores.size()));
 
-        // Reescrever o arquivo com os 10 melhores
+        
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(arquivoDePontuacoes, false))) {
             for (String[] score : top10Scores) {
                 bw.write(score[0] + "," + score[1]);
@@ -156,10 +154,10 @@ public class App {
             return;
         }
 
-        // Ordenando as pontuações
+        
         scores.sort((a, b) -> Integer.compare(Integer.parseInt(b[1]), Integer.parseInt(a[1])));
 
-        // Criando a tabela
+        
         String[] columnNames = {"Nome do Jogador", "Pontuação"};
         String[][] data = new String[scores.size()][2];
         for (int i = 0; i < scores.size(); i++) {
@@ -170,7 +168,7 @@ public class App {
         JScrollPane scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
 
-        // Exibindo a tabela em um JOptionPane
+        
         JOptionPane.showMessageDialog(frame, scrollPane, "Placar", JOptionPane.INFORMATION_MESSAGE);
     }
 
